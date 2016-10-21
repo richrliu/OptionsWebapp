@@ -25,7 +25,7 @@ module.exports = function(app) {
 
         StockTime.create({ticker: ticker, name: name, date: date, price: price}, function (err, stocktime) {
             if (err) console.log(err);
-            console.log(ticker);
+            res.send("success");
         });
     });
 
