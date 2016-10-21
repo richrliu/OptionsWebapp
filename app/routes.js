@@ -12,7 +12,7 @@ module.exports = function(app) {
         StockTime.find(function(err, stockTimes) {
             if (err) res.send(err);
 
-            res.json(stockTimes); // return all nerds in JSON format
+            res.json(stockTimes);
         });
     });
 
