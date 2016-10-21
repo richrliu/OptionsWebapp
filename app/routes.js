@@ -17,6 +17,18 @@ module.exports = function(app) {
     });
 
     // route to handle creating goes here (app.post)
+    app.post('/api/stock-time/create/', function(req, res) {
+        var ticker = req.query.ticker;
+        var name = req.query.name;
+        var date = req.query.date;
+        var price = req.query.price;
+
+        StockTime.create({ticker: ticker, name: name, date: date, price: price}, function (err, stocktime) {
+            if (err) console.log(err);
+            console.log(ticker);
+        });
+    });
+
     // route to handle delete goes here (app.delete)
 
     // frontend routes =========================================================
