@@ -1,1 +1,1 @@
-angular.module('sampleApp', ['ngRoute', 'appRoutes', 'MainCtrl', 'StockTimeCtrl', 'StockTimeService']);
+angular.module('optionsApp', ['ngRoute', 'nvd3']);
