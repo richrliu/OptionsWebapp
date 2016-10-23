@@ -54,7 +54,7 @@ module.exports = function(app) {
     });
 
     // route to handle creating goes here (app.post)
-    app.post('/api/stock-time/create/', function(req, res) {
+    app.post('/api/stock-time/', function(req, res) {
         var ticker = req.query.ticker;
         var name = req.query.name;
         var date = req.query.date;
