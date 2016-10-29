@@ -1,21 +1,22 @@
 <div>
     <h1>
         Grapher
-    </h1>
-    Select a Ticker:
+    </h1> Select a Ticker:
     <select ng-model="ticker" ng-options="t for t in tickers"></select>
-    <br/>
-    Select an Expiry:
+    <br/> Select an Expiry:
     <select ng-model="expiry" ng-options="e for e in expiries"></select>
-    <br/>
-    Select a Type:
+    <br/> Select a Type:
     <select ng-model="type" ng-options="ty for ty in optionTypes"></select>
-    <br/>
-    Select X-var:
+    <br/> Select X-var:
     <select ng-model="xVar" ng-options="k for k in optionKeys"></select>
-    <br/>
-    Select Y-var:
-    <select ng-model="yVar" ng-options="k for k in optionKeys"></select>
+    <br/> Select Y-vars:
+    <div ng-repeat="v in yVars track by $index">
+        <select ng-model="yVars[$index]" ng-options="k for k in optionKeys"></select>
+        <input type="checkbox" ng-model="display[$index].scatter" name="Scatter" /> Scatter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" ng-model="display[$index].reg" name="Regression" /> Regression
+    </div>
+    <br />
+    <button ng-click="addYVar()"> Add a Y-var </button>
     <br/>
     <br/>
     <nvd3 ng-if="displayGraph" options="options" data="data"></nvd3>
