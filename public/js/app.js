@@ -1,1 +1,1 @@
-angular.module('optionsApp', ['ngRoute', 'nvd3']);
+angular.module('optionsApp', ['ngRoute', 'nvd3', 'highcharts-ng']);

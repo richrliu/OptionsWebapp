@@ -41,7 +41,16 @@ module.exports = function(app) {
         });
     });
 
+    app.delete('/api/options', function(req, res) {
+        Option.remove(req.query).exec();
+        res.json({
+            message: "Scrapes Cleared"
+        })
+    })
+
     app.post('/api/scrape', function(req, res) {
+        var ticker = req.body.ticker.toLowerCase();
+        Option.remove({ ticker: ticker }).exec();
         Scraper.scrape(req.body.ticker, function(data) {
             data.forEach(function(opt) {
                 var newOption = new Option(opt);
