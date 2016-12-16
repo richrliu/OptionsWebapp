@@ -12,12 +12,12 @@
     <br/> Select Y-vars:
     <div ng-repeat="v in yVars track by $index">
         <select ng-model="yVars[$index]" ng-options="k for k in optionKeys"></select>
-        <input type="checkbox" ng-model="display[$index].scatter" name="Scatter" /> Scatter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" ng-model="display[$index].data" name="Data" /> Data Line &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="checkbox" ng-model="display[$index].reg" name="Regression" /> Regression
     </div>
     <br />
     <button ng-click="addYVar()"> Add a Y-var </button>
     <br/>
     <br/>
-    <nvd3 ng-if="displayGraph" options="options" data="data"></nvd3>
+    <highchart id="mainChart" config="chartConfig"></highchart>
 </div>

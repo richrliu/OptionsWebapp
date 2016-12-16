@@ -26,7 +26,7 @@ angular.module('optionsApp').controller('GrapherController', function($scope, $h
     $scope.displayGraph = false;
     $scope.xVar = "strike";
     $scope.yVars = ["delta"];
-    $scope.display = [{ scatter: true, reg: false }];
+    $scope.display = [{ data: true, reg: false }];
 
     $http({
         method: 'get',
@@ -75,6 +75,62 @@ angular.module('optionsApp').controller('GrapherController', function($scope, $h
         }
     }
 
+    function handleClick(x, y) {
+        console.log($scope.xVar + ": " + x);
+        console.log($scope.yVars[0] + ": " + y)
+    }
+
+
+    $scope.chartConfig = {
+        options: {
+            chart: {
+                type: 'scatter',
+                events: {
+                    click: function(e) {
+                        var x = e.xAxis[0].value;
+                        var y = e.yAxis[0].value;
+                        handleClick(x, y);
+                    }
+                }
+            },
+            legend: {
+                enabled: true
+            },
+            exporting: {
+                enabled: true
+            },
+            plotOptions: {
+                series: {
+                    lineWidth: 1,
+                    point: {
+                        events: {
+                            click: function() {
+                                handleClick(this.x, this.y);
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        xAxis: {
+            title: {
+                text: $scope.xVar
+            },
+            gridLineWidth: 1,
+            minPadding: 0.2,
+            maxPadding: 0.2
+        },
+        yAxis: {
+            title: {
+                text: $scope.yVars.join(", ")
+            },
+            minPadding: 0.2,
+            maxPadding: 0.2,
+        },
+        series: []
+    }
+
+
     $scope.updateData = function() {
         if (!($scope.expiry && $scope.ticker && $scope.type)) return;
         $http({
@@ -86,87 +142,44 @@ angular.module('optionsApp').controller('GrapherController', function($scope, $h
                 type: $scope.type
             }
         }).then(function(resp) {
-            $scope.data = [];
+            var series = [];
             $scope.yVars.forEach(function(yVar, yVarI) {
                 var dataPoints = resp.data.options.map(function(val) {
                     return [getFunction($scope.xVar)(val), getFunction(yVar)(val)]
                 });
-                if ($scope.display[yVarI].scatter) {
-                    $scope.data.push({
-                        values: dataPoints,
-                        key: yVar,
-                        area: false
+                dataPoints = dataPoints.sort(function(a, b) {
+                    return a[0] - b[0];
+                });
+                if ($scope.display[yVarI].data) {
+                    series.push({
+                        data: dataPoints,
+                        name: yVar
                     });
                 }
                 if ($scope.display[yVarI].reg) {
                     var a = regression('polynomial', dataPoints, 6);
-                    // var a = a.equation;
-                    // var regressionPoints = []
-                    // dataPoints.forEach(function(val, i) {
-                    //     var x = val[0]
-                    //     var nextX = i < dataPoints.length - 1 ? dataPoints[i + 1][0] : val[0];
-                    //     var step = (nextX - x) / 10.0;
-                    //     for (var currX = x; currX < nextX; currX += step) {
-                    //         var value = [x, 0];
-                    //         a.forEach(function(asdf, i) {
-                    //             value[1] += a[i] * Math.pow(val[0], i);
-                    //         });
-                    //         regressionPoints.push(value);
-                    //     }
-                    //
-                    // });
-                    $scope.data.push({
-                        values: a.points,
-                        key: yVar + " (regression)",
-                        area: false
+
+                    series.push({
+                        data: a.points,
+                        name: yVar + " (regression)"
                     });
                 }
             });
-            $scope.options = {
-                chart: {
-                    type: "scatterChart",
-                    height: 500,
-                    useInteractiveGuideline: true,
-                    scatter: {
-                        onlyCircles: false
-                    },
-                    xAxis: {
-                        axisLabel: $scope.xVar
-                    },
-                    yAxis: {
-                        axisLabel: $scope.yVars
-                    },
-                    x: function(d) {
-                        return d[0];
-                    },
-                    y: function(d) {
-                        return d[1];
-                    },
-                    zoom: {
-                        enabled: true,
-                        scaleExtent: [
-                            1,
-                            10
-                        ],
-                        useFixedDomain: true,
-                        useNiceScale: false,
-                        horizontalOff: false,
-                        verticalOff: false,
-                        unzoomEventType: "dblclick.zoom"
-                    }
-                },
-                title: {
-                    enable: true,
-                    text: $scope.ticker + ": " + $scope.xVar + " vs " + $scope.yVars
-                },
-            }
+
+            $scope.chartConfig.series = series;
+            $scope.chartConfig.title = {
+                text: $scope.ticker + ": " + $scope.xVar + " vs " + $scope.yVars.join(", ")
+            };
+            $scope.chartConfig.xAxis.title.text = $scope.xVar;
+            $scope.chartConfig.yAxis.title.text = $scope.yVars.join(", ");
+
             $scope.displayGraph = true;
         });
     }
 
     $scope.addYVar = function() {
         $scope.yVars.push("delta");
-        $scope.display.push({ scatter: false, reg: true });
+        $scope.display.push({ data: false, reg: true });
     }
 
     $scope.$watch('xVar', $scope.updateData);
